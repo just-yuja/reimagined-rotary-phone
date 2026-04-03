@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>현숙의 단어장</title>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #fff9f2;
+  --card: #ffffff;
+  --accent: #e8604c;
+  --accent2: #f0a500;
+  --accent3: #4caf8e;
+  --text: #3a2e28;
+  --muted: #a09080;
+  --border: #f0ddd0;
+  --green: #4caf8e;
+  --red: #e8604c;
+  --soft: #fff3eb;
+}
+body {
+  font-family: 'Gowun Dodum', 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(232,96,76,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(240,165,0,0.06) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+.container { max-width: 680px; margin: 0 auto; padding: 20px 16px 60px; position: relative; z-index: 1; }
+
+header { text-align: center; margin-bottom: 20px; padding: 24px 20px; background: var(--card); border-radius: 24px; border: 2px solid var(--border); box-shadow: 0 4px 20px rgba(232,96,76,0.08); }
+.logo-emoji { font-size: 34px; display: block; margin-bottom: 4px; }
+.logo { font-family: 'Gaegu', cursive; font-weight: 700; font-size: 40px; color: var(--accent); line-height: 1.1; }
+.subtitle { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.subtitle span { color: var(--accent2); font-weight: 700; }
+
+/* 주차 탭 */
+.week-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.week-tab {
+  flex: 1; padding: 10px 4px; border: 2px solid var(--border);
+  border-radius: 12px; background: var(--card); color: var(--muted);
+  font-family: 'Gowun Dodum', sans-serif; font-size: 13px; cursor: pointer;
+  transition: all 0.2s; text-align: center;
+}
+.week-tab.active { border-color: var(--accent2); color: var(--accent2); background: #fff8e6; font-weight: 700; }
+
+/* DAY 네비게이션 */
+.day-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--card); border: 2px solid var(--border); border-radius: 18px;
+  padding: 14px 18px; margin-bottom: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.day-info { display: flex; flex-direction: column; }
+.day-label { font-family: 'Gaegu', cursive; font-size: 28px; color: var(--accent); line-height: 1; }
+.day-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.day-topic { font-size: 13px; color: var(--accent2); font-weight: 700; margin-top: 2px; }
+.nav-btns { display: flex; gap: 8px; }
+.nav-btn {
+  background: var(--soft); border: 2px solid var(--border); color: var(--text);
+  width: 44px; height: 44px; border-radius: 12px; cursor: pointer;
+  font-size: 18px; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.day-dots { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; margin-bottom: 14px; }
+.day-dot {
+  width: 28px; height: 28px; border-radius: 50%; background: var(--soft);
+  border: 2px solid var(--border); font-size: 11px; color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s; font-family: 'Gowun Dodum', sans-serif;
+}
+.day-dot.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+.day-dot:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+/* 탭 */
+.tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+.tab {
+  flex: 1; padding: 11px 8px; border: 2px solid var(--border);
+  border-radius: 14px; background: var(--card); color: var(--muted);
+  font-family: 'Gowun Dodum', sans-serif; font-size: 14px; cursor: pointer;
+  transition: all 0.2s; text-align: center;
+}
+.tab.active { border-color: var(--accent); color: var(--accent); background: #fff5f3; font-weight: 700; }
+
+/* 진행 바 */
+.progress-bar { height: 8px; background: var(--border); border-radius: 10px; margin-bottom: 18px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 10px; transition: width 0.4s ease; }
+
+/* 목록 */
+.word-list { display: flex; flex-direction: column; gap: 10px; }
+.word-item {
+  background: var(--card); border: 2px solid var(--border); border-radius: 18px;
+  padding: 16px 18px; transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.word-item:hover { border-color: rgba(232,96,76,0.3); box-shadow: 0 4px 16px rgba(232,96,76,0.08); }
+.word-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+.word-num { font-size: 13px; color: var(--muted); width: 22px; flex-shrink: 0; font-weight: 700; }
+.word-en { font-family: 'Gaegu', cursive; font-size: 23px; font-weight: 700; color: var(--accent); }
+.word-pos { font-size: 11px; color: var(--accent2); background: rgba(240,165,0,0.12); padding: 2px 9px; border-radius: 20px; }
+.word-pronounce { font-size: 13px; color: var(--muted); padding-left: 32px; margin-bottom: 4px; }
+.word-ko { font-size: 16px; color: var(--text); margin-bottom: 6px; padding-left: 32px; font-weight: 700; }
+.word-example-row { display: flex; align-items: flex-start; gap: 8px; padding-left: 32px; }
+.word-example { font-size: 13px; color: var(--muted); line-height: 1.5; flex: 1; }
+.word-example-ko { font-size: 12px; color: var(--accent3); margin-top: 2px; }
+
+.icon-btn {
+  background: #fff5f3; border: 2px solid var(--border); color: var(--accent);
+  border-radius: 10px; width: 32px; height: 32px; font-size: 14px; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all 0.2s; flex-shrink: 0;
+}
+.icon-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); transform: scale(1.08); }
+.icon-btn.active { background: var(--accent); color: #fff; }
+
+/* 플래시카드 */
+.flashcard-wrap { perspective: 1200px; height: 300px; margin-bottom: 18px; cursor: pointer; user-select: none; }
+.flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(0.4,0,0.2,1); }
+.flashcard.flipped { transform: rotateY(180deg); }
+.card-face {
+  position: absolute; inset: 0; border-radius: 24px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border: 2px solid var(--border); padding: 28px; text-align: center;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.08);
+}
+.card-front { background: linear-gradient(135deg, #ffffff 0%, #fff8f4 100%); border-color: rgba(232,96,76,0.2); }
+.card-back { background: linear-gradient(135deg, #f4fff9 0%, #e8f8f2 100%); border-color: rgba(76,175,142,0.3); transform: rotateY(180deg); }
+.card-hint { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+.card-word { font-family: 'Gaegu', cursive; font-size: 44px; font-weight: 700; color: var(--accent); margin-bottom: 4px; line-height: 1.1; }
+.card-pronounce { font-size: 14px; color: var(--muted); margin-bottom: 8px; }
+.card-pos { font-size: 13px; color: var(--accent2); background: rgba(240,165,0,0.12); padding: 3px 14px; border-radius: 20px; }
+.card-btns { display: flex; gap: 10px; margin-top: 18px; }
+.card-icon-btn {
+  background: #fff5f3; border: 2px solid rgba(232,96,76,0.2); color: var(--accent);
+  border-radius: 50%; width: 42px; height: 42px; font-size: 19px; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.card-icon-btn:hover { background: var(--accent); color: #fff; transform: scale(1.1); }
+.card-icon-btn.active { background: var(--accent); color: #fff; }
+.card-meaning { font-size: 30px; font-weight: 700; color: var(--accent3); margin-bottom: 8px; }
+.card-example { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 4px; }
+.card-example-ko { font-size: 12px; color: var(--accent3); }
+.card-ex-btns { display: flex; gap: 8px; margin-top: 12px; }
+.card-counter { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 12px; }
+.card-controls { display: flex; gap: 10px; justify-content: center; }
+.ctrl-btn { padding: 13px 34px; border: none; border-radius: 14px; font-family: 'Gowun Dodum', sans-serif; font-size: 15px; cursor: pointer; transition: all 0.2s; }
+.btn-prev { background: var(--soft); border: 2px solid var(--border); color: var(--text); }
+.btn-next { background: var(--accent); color: #fff; font-weight: 700; border: 2px solid var(--accent); }
+.btn-prev:hover { background: var(--border); }
+.btn-next:hover { background: #d44e3c; }
+
+/* 퀴즈 */
+.quiz-score { text-align: center; font-size: 14px; color: var(--muted); margin-bottom: 14px; }
+.quiz-question {
+  background: var(--card); border: 2px solid rgba(232,96,76,0.2); border-radius: 20px;
+  padding: 30px 20px; text-align: center; margin-bottom: 18px;
+  box-shadow: 0 4px 20px rgba(232,96,76,0.06);
+}
+.quiz-q-label { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+.quiz-word { font-family: 'Gaegu', cursive; font-size: 46px; font-weight: 700; color: var(--accent); margin-bottom: 4px; line-height: 1.1; }
+.quiz-pos { font-size: 14px; color: var(--muted); }
+.quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+.quiz-opt {
+  background: var(--card); border: 2px solid var(--border); color: var(--text);
+  padding: 16px 10px; border-radius: 14px; font-size: 15px;
+  font-family: 'Gowun Dodum', sans-serif; cursor: pointer; transition: all 0.2s; line-height: 1.4;
+}
+.quiz-opt:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: #fff5f3; }
+.quiz-opt.correct { border-color: var(--green) !important; background: rgba(76,175,142,0.1) !important; color: var(--green) !important; }
+.quiz-opt.wrong { border-color: var(--red) !important; background: rgba(232,96,76,0.08) !important; color: var(--red) !important; }
+.quiz-opt:disabled { cursor: default; }
+.quiz-result { background: var(--card); border: 2px solid var(--border); border-radius: 20px; padding: 40px 20px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+.result-score { font-family: 'Gaegu', cursive; font-size: 84px; color: var(--accent); line-height: 1; margin-bottom: 10px; }
+.result-label { font-size: 18px; color: var(--text); margin-bottom: 26px; line-height: 1.6; }
+.retry-btn { padding: 13px 40px; background: var(--accent); border: none; border-radius: 14px; color: #fff; font-family: 'Gowun Dodum', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+.retry-btn:hover { background: #d44e3c; }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <span class="logo-emoji">🌸</span>
+    <div class="logo">현숙의 단어장</div>
+    <div class="subtitle">하루 <span>10단어</span> · 4주 완성 실생활 영어</div>
+  </header>
+
+  <div class="week-tabs">
+    <button class="week-tab active" data-week="0">1주차</button>
+    <button class="week-tab" data-week="1">2주차</button>
+    <button class="week-tab" data-week="2">3주차</button>
+    <button class="week-tab" data-week="3">4주차</button>
+  </div>
+
+  <div class="day-dots" id="dayDots"></div>
+
+  <div class="day-nav">
+    <div class="day-info">
+      <div class="day-label" id="dayLabel">DAY 1</div>
+      <div class="day-topic" id="dayTopic"></div>
+      <div class="day-sub" id="dayRange">단어 1–10</div>
+    </div>
+    <div class="nav-btns">
+      <button class="nav-btn" id="btnPrevDay">←</button>
+      <button class="nav-btn" id="btnNextDay">→</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" id="tab-list">📋 단어 보기</div>
+    <div class="tab" id="tab-card">🃏 카드 학습</div>
+    <div class="tab" id="tab-quiz">🎯 퀴즈</div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width:100%"></div>
+  </div>
+
+  <div id="listMode"><div class="word-list" id="wordList"></div></div>
+
+  <div id="cardMode" class="hidden">
+    <div class="card-counter" id="cardCounter">1 / 10</div>
+    <div class="flashcard-wrap" id="flashcardWrap">
+      <div class="flashcard" id="flashcard">
+        <div class="card-face card-front">
+          <div class="card-hint">👆 탭하면 뜻이 나타나요</div>
+          <div class="card-word" id="cardWord"></div>
+          <div class="card-pronounce" id="cardPronounce"></div>
+          <div class="card-pos" id="cardPos"></div>
+          <div class="card-btns">
+            <button class="card-icon-btn" id="cardSpeakWord">🔊</button>
+          </div>
+        </div>
+        <div class="card-face card-back">
+          <div class="card-hint">✅ 뜻</div>
+          <div class="card-meaning" id="cardMeaning"></div>
+          <div class="card-example" id="cardExample"></div>
+          <div class="card-example-ko" id="cardExampleKo"></div>
+          <div class="card-ex-btns">
+            <button class="card-icon-btn" id="cardSpeakEx">🔊</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-controls">
+      <button class="ctrl-btn btn-prev" id="btnPrevCard">← 이전</button>
+      <button class="ctrl-btn btn-next" id="btnNextCard">다음 →</button>
+    </div>
+  </div>
+
+  <div id="quizMode" class="hidden">
+    <div id="quizPlay">
+      <div class="quiz-score" id="quizScore">점수: 0 / 0</div>
+      <div class="quiz-question">
+        <div class="quiz-q-label">이 단어의 뜻은 무엇일까요? 🤔</div>
+        <div class="quiz-word" id="quizWord"></div>
+        <div class="quiz-pos" id="quizPos"></div>
+      </div>
+      <div class="quiz-options" id="quizOptions"></div>
+    </div>
+    <div id="quizResult" class="quiz-result hidden">
+      <div class="result-score" id="resultScore"></div>
+      <div class="result-label" id="resultLabel"></div>
+      <button class="retry-btn" id="btnRetry">🔄 다시 풀기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var ALL_WORDS = [
+  // ── 1주차 ── 기초 생활 영어
+  // DAY 1 - 인사 / 기본 표현
+  [
+    { en:"hello", pr:"[헬로우]", pos:"표현", ko:"안녕하세요", ex:"Hello! How are you?", exko:"안녕하세요! 어떻게 지내세요?" },
+    { en:"good morning", pr:"[굿 모닝]", pos:"표현", ko:"좋은 아침이에요", ex:"Good morning! Did you sleep well?", exko:"좋은 아침이에요! 잘 주무셨어요?" },
+    { en:"thank you", pr:"[땡큐]", pos:"표현", ko:"감사합니다", ex:"Thank you very much!", exko:"정말 감사합니다!" },
+    { en:"sorry", pr:"[쏘리]", pos:"표현", ko:"죄송합니다", ex:"I'm so sorry.", exko:"정말 죄송해요." },
+    { en:"please", pr:"[플리즈]", pos:"부사", ko:"부탁합니다", ex:"Please help me.", exko:"도와주세요." },
+    { en:"excuse me", pr:"[익스큐즈 미]", pos:"표현", ko:"실례합니다 / 저기요", ex:"Excuse me, where is the restroom?", exko:"실례합니다, 화장실이 어디인가요?" },
+    { en:"yes", pr:"[예스]", pos:"표현", ko:"네", ex:"Yes, I understand.", exko:"네, 이해했어요." },
+    { en:"no", pr:"[노우]", pos:"표현", ko:"아니요", ex:"No, thank you.", exko:"아니요, 괜찮아요." },
+    { en:"help", pr:"[헬프]", pos:"동사/명사", ko:"돕다 / 도움", ex:"Can you help me, please?", exko:"도와주실 수 있나요?" },
+    { en:"nice to meet you", pr:"[나이스 투 밋 유]", pos:"표현", ko:"만나서 반갑습니다", ex:"Nice to meet you!", exko:"만나서 반가워요!" }
+  ],
+  // DAY 2 - 숫자 / 시간
+  [
+    { en:"morning", pr:"[모닝]", pos:"명사", ko:"아침", ex:"I wake up early in the morning.", exko:"저는 아침에 일찍 일어나요." },
+    { en:"afternoon", pr:"[애프터눈]", pos:"명사", ko:"오후", ex:"See you this afternoon.", exko:"오늘 오후에 봐요." },
+    { en:"evening", pr:"[이브닝]", pos:"명사", ko:"저녁", ex:"Good evening, everyone.", exko:"안녕하세요, 여러분." },
+    { en:"today", pr:"[투데이]", pos:"명사", ko:"오늘", ex:"What day is it today?", exko:"오늘이 무슨 요일이에요?" },
+    { en:"tomorrow", pr:"[투마로우]", pos:"명사", ko:"내일", ex:"See you tomorrow!", exko:"내일 봐요!" },
+    { en:"yesterday", pr:"[예스터데이]", pos:"명사", ko:"어제", ex:"I was busy yesterday.", exko:"어제는 바빴어요." },
+    { en:"hour", pr:"[아워]", pos:"명사", ko:"시간", ex:"I'll be there in one hour.", exko:"한 시간 후에 도착할게요." },
+    { en:"minute", pr:"[미닛]", pos:"명사", ko:"분", ex:"Wait five minutes, please.", exko:"5분만 기다려 주세요." },
+    { en:"week", pr:"[윅]", pos:"명사", ko:"주, 일주일", ex:"I exercise three times a week.", exko:"일주일에 세 번 운동해요." },
+    { en:"month", pr:"[먼쓰]", pos:"명사", ko:"달, 월", ex:"I visit my daughter every month.", exko:"매달 딸을 방문해요." }
+  ],
+  // DAY 3 - 가족 / 사람
+  [
+    { en:"family", pr:"[패밀리]", pos:"명사", ko:"가족", ex:"My family is very important to me.", exko:"가족은 저에게 매우 소중해요." },
+    { en:"husband", pr:"[허즈번드]", pos:"명사", ko:"남편", ex:"My husband is a kind man.", exko:"제 남편은 친절한 사람이에요." },
+    { en:"daughter", pr:"[도터]", pos:"명사", ko:"딸", ex:"My daughter lives in Seoul.", exko:"제 딸은 서울에 살아요." },
+    { en:"son", pr:"[썬]", pos:"명사", ko:"아들", ex:"My son is a university student.", exko:"제 아들은 대학생이에요." },
+    { en:"grandchild", pr:"[그랜드차일드]", pos:"명사", ko:"손자/손녀", ex:"I love my grandchildren.", exko:"손자들이 너무 사랑스러워요." },
+    { en:"friend", pr:"[프렌드]", pos:"명사", ko:"친구", ex:"She is my best friend.", exko:"그녀는 제 가장 친한 친구예요." },
+    { en:"neighbor", pr:"[네이버]", pos:"명사", ko:"이웃", ex:"My neighbor is very nice.", exko:"제 이웃은 매우 친절해요." },
+    { en:"old", pr:"[올드]", pos:"형용사", ko:"나이 든 / 오래된", ex:"I am 63 years old.", exko:"저는 63살이에요." },
+    { en:"young", pr:"[영]", pos:"형용사", ko:"젊은", ex:"She looks very young.", exko:"그녀는 매우 젊어 보여요." },
+    { en:"happy", pr:"[해피]", pos:"형용사", ko:"행복한", ex:"I am very happy today.", exko:"오늘 정말 행복해요." }
+  ],
+  // DAY 4 - 병원 / 건강
+  [
+    { en:"hospital", pr:"[하스피틀]", pos:"명사", ko:"병원", ex:"I need to go to the hospital.", exko:"병원에 가야 해요." },
+    { en:"doctor", pr:"[닥터]", pos:"명사", ko:"의사", ex:"The doctor will see you now.", exko:"의사 선생님이 곧 보실 거예요." },
+    { en:"medicine", pr:"[메디신]", pos:"명사", ko:"약", ex:"Take this medicine after meals.", exko:"식후에 이 약을 드세요." },
+    { en:"pain", pr:"[페인]", pos:"명사", ko:"통증, 아픔", ex:"I have pain in my knee.", exko:"무릎이 아파요." },
+    { en:"fever", pr:"[피버]", pos:"명사", ko:"열", ex:"I have a slight fever.", exko:"미열이 있어요." },
+    { en:"appointment", pr:"[어포인트먼트]", pos:"명사", ko:"진료 예약", ex:"I have a doctor's appointment.", exko:"의사 진료 예약이 있어요." },
+    { en:"pharmacy", pr:"[파마시]", pos:"명사", ko:"약국", ex:"The pharmacy is on the first floor.", exko:"약국은 1층에 있어요." },
+    { en:"blood pressure", pr:"[블러드 프레셔]", pos:"명사", ko:"혈압", ex:"My blood pressure is high today.", exko:"오늘 혈압이 높아요." },
+    { en:"tired", pr:"[타이어드]", pos:"형용사", ko:"피곤한", ex:"I feel very tired lately.", exko:"요즘 너무 피곤해요." },
+    { en:"healthy", pr:"[헬씨]", pos:"형용사", ko:"건강한", ex:"I want to stay healthy.", exko:"건강하게 지내고 싶어요." }
+  ],
+  // DAY 5 - 음식 / 식당
+  [
+    { en:"delicious", pr:"[딜리셔스]", pos:"형용사", ko:"맛있는", ex:"This kimchi is so delicious!", exko:"이 김치 정말 맛있어요!" },
+    { en:"menu", pr:"[메뉴]", pos:"명사", ko:"메뉴", ex:"Can I see the menu?", exko:"메뉴판 볼 수 있나요?" },
+    { en:"order", pr:"[오더]", pos:"동사", ko:"주문하다", ex:"I'd like to order, please.", exko:"주문하고 싶어요." },
+    { en:"spicy", pr:"[스파이시]", pos:"형용사", ko:"매운", ex:"Is this dish spicy?", exko:"이 음식은 매운가요?" },
+    { en:"water", pr:"[워터]", pos:"명사", ko:"물", ex:"Can I have a glass of water?", exko:"물 한 잔 주세요." },
+    { en:"bill", pr:"[빌]", pos:"명사", ko:"계산서", ex:"Can I have the bill, please?", exko:"계산서 주세요." },
+    { en:"takeout", pr:"[테이크아웃]", pos:"명사", ko:"포장", ex:"Is this for here or takeout?", exko:"여기서 드실 건가요, 포장인가요?" },
+    { en:"breakfast", pr:"[브렉퍼스트]", pos:"명사", ko:"아침 식사", ex:"I had rice for breakfast.", exko:"아침으로 밥을 먹었어요." },
+    { en:"lunch", pr:"[런치]", pos:"명사", ko:"점심", ex:"Let's have lunch together.", exko:"같이 점심 먹어요." },
+    { en:"dinner", pr:"[디너]", pos:"명사", ko:"저녁 식사", ex:"Dinner is ready!", exko:"저녁 다 됐어요!" }
+  ],
+  // DAY 6 - 쇼핑 / 마트
+  [
+    { en:"price", pr:"[프라이스]", pos:"명사", ko:"가격", ex:"What is the price of this?", exko:"이것은 얼마예요?" },
+    { en:"discount", pr:"[디스카운트]", pos:"명사", ko:"할인", ex:"Is there any discount?", exko:"할인 되나요?" },
+    { en:"receipt", pr:"[리싯]", pos:"명사", ko:"영수증", ex:"Can I have a receipt?", exko:"영수증 주세요." },
+    { en:"cash", pr:"[캐쉬]", pos:"명사", ko:"현금", ex:"I'll pay in cash.", exko:"현금으로 낼게요." },
+    { en:"card", pr:"[카드]", pos:"명사", ko:"카드", ex:"Can I pay by card?", exko:"카드로 계산할 수 있나요?" },
+    { en:"bag", pr:"[백]", pos:"명사", ko:"가방 / 봉지", ex:"Do you need a bag?", exko:"봉지 필요하세요?" },
+    { en:"cheap", pr:"[칩]", pos:"형용사", ko:"저렴한", ex:"This is very cheap.", exko:"이것은 매우 저렴해요." },
+    { en:"expensive", pr:"[익스펜시브]", pos:"형용사", ko:"비싼", ex:"This bag is too expensive.", exko:"이 가방은 너무 비싸요." },
+    { en:"fresh", pr:"[프레쉬]", pos:"형용사", ko:"신선한", ex:"These vegetables are very fresh.", exko:"이 채소들이 아주 신선해요." },
+    { en:"sale", pr:"[세일]", pos:"명사", ko:"세일, 할인 판매", ex:"Everything is on sale today!", exko:"오늘은 모든 게 세일이에요!" }
+  ],
+  // DAY 7 - 집 / 생활
+  [
+    { en:"home", pr:"[홈]", pos:"명사", ko:"집, 가정", ex:"There is no place like home.", exko:"집만한 곳은 없어요." },
+    { en:"kitchen", pr:"[키친]", pos:"명사", ko:"주방", ex:"I love cooking in the kitchen.", exko:"주방에서 요리하는 게 좋아요." },
+    { en:"bedroom", pr:"[베드룸]", pos:"명사", ko:"침실", ex:"The bedroom is very cozy.", exko:"침실이 매우 아늑해요." },
+    { en:"bathroom", pr:"[배쓰룸]", pos:"명사", ko:"화장실", ex:"Where is the bathroom?", exko:"화장실이 어디인가요?" },
+    { en:"clean", pr:"[클린]", pos:"형용사", ko:"깨끗한", ex:"Keep the house clean.", exko:"집을 깨끗하게 유지해요." },
+    { en:"wash", pr:"[워쉬]", pos:"동사", ko:"씻다, 빨다", ex:"I wash my hands before meals.", exko:"식사 전에 손을 씻어요." },
+    { en:"laundry", pr:"[론드리]", pos:"명사", ko:"빨래", ex:"I do laundry twice a week.", exko:"일주일에 두 번 빨래해요." },
+    { en:"garden", pr:"[가든]", pos:"명사", ko:"정원", ex:"I water my garden every day.", exko:"매일 정원에 물을 줘요." },
+    { en:"neighbor", pr:"[네이버]", pos:"명사", ko:"이웃", ex:"My neighbors are very friendly.", exko:"이웃들이 매우 친절해요." },
+    { en:"rest", pr:"[레스트]", pos:"동사/명사", ko:"쉬다 / 휴식", ex:"I need to rest a little.", exko:"좀 쉬어야겠어요." }
+  ],
+
+  // ── 2주차 ── 외출·여행·날씨
+  // DAY 8 - 교통 / 길 찾기
+  [
+    { en:"bus", pr:"[버스]", pos:"명사", ko:"버스", ex:"I take the bus every morning.", exko:"매일 아침 버스를 타요." },
+    { en:"subway", pr:"[서브웨이]", pos:"명사", ko:"지하철", ex:"The subway is very fast.", exko:"지하철은 매우 빨라요." },
+    { en:"taxi", pr:"[택시]", pos:"명사", ko:"택시", ex:"Please call a taxi for me.", exko:"택시 좀 불러 주세요." },
+    { en:"stop", pr:"[스탑]", pos:"명사", ko:"정류장", ex:"Get off at the next stop.", exko:"다음 정류장에서 내려요." },
+    { en:"straight", pr:"[스트레이트]", pos:"부사", ko:"직진, 똑바로", ex:"Go straight ahead.", exko:"똑바로 가세요." },
+    { en:"turn left", pr:"[턴 레프트]", pos:"표현", ko:"왼쪽으로 도세요", ex:"Turn left at the corner.", exko:"모퉁이에서 왼쪽으로 도세요." },
+    { en:"turn right", pr:"[턴 라이트]", pos:"표현", ko:"오른쪽으로 도세요", ex:"Turn right after the bank.", exko:"은행 다음에 오른쪽으로 도세요." },
+    { en:"far", pr:"[파]", pos:"형용사", ko:"멀다", ex:"Is it far from here?", exko:"여기서 먼가요?" },
+    { en:"close", pr:"[클로즈]", pos:"형용사", ko:"가까운", ex:"The market is very close.", exko:"시장이 매우 가까워요." },
+    { en:"walk", pr:"[워크]", pos:"동사", ko:"걷다", ex:"I walk for 30 minutes every day.", exko:"매일 30분씩 걸어요." }
+  ],
+  // DAY 9 - 날씨
+  [
+    { en:"weather", pr:"[웨더]", pos:"명사", ko:"날씨", ex:"The weather is beautiful today.", exko:"오늘 날씨가 정말 좋아요." },
+    { en:"sunny", pr:"[써니]", pos:"형용사", ko:"맑은, 화창한", ex:"It is sunny and warm.", exko:"화창하고 따뜻해요." },
+    { en:"cloudy", pr:"[클라우디]", pos:"형용사", ko:"흐린", ex:"It is a bit cloudy today.", exko:"오늘은 조금 흐려요." },
+    { en:"rain", pr:"[레인]", pos:"명사/동사", ko:"비 / 비가 오다", ex:"It is going to rain tomorrow.", exko:"내일 비가 올 거예요." },
+    { en:"umbrella", pr:"[엄브렐라]", pos:"명사", ko:"우산", ex:"Don't forget your umbrella.", exko:"우산을 잊지 마세요." },
+    { en:"cold", pr:"[콜드]", pos:"형용사", ko:"추운", ex:"It is very cold today.", exko:"오늘 정말 추워요." },
+    { en:"hot", pr:"[핫]", pos:"형용사", ko:"더운", ex:"It is so hot in summer.", exko:"여름에는 너무 더워요." },
+    { en:"wind", pr:"[윈드]", pos:"명사", ko:"바람", ex:"The wind is very strong.", exko:"바람이 매우 강해요." },
+    { en:"snow", pr:"[스노우]", pos:"명사/동사", ko:"눈 / 눈이 오다", ex:"I love watching snow fall.", exko:"눈 내리는 걸 보는 걸 좋아해요." },
+    { en:"warm", pr:"[웜]", pos:"형용사", ko:"따뜻한", ex:"Spring is warm and nice.", exko:"봄은 따뜻하고 좋아요." }
+  ],
+  // DAY 10 - 여행 준비
+  [
+    { en:"passport", pr:"[패스포트]", pos:"명사", ko:"여권", ex:"Don't forget your passport.", exko:"여권을 잊지 마세요." },
+    { en:"luggage", pr:"[러기지]", pos:"명사", ko:"짐, 수하물", ex:"I have two pieces of luggage.", exko:"짐이 두 개예요." },
+    { en:"ticket", pr:"[티켓]", pos:"명사", ko:"표, 티켓", ex:"I bought a plane ticket.", exko:"비행기 표를 샀어요." },
+    { en:"hotel", pr:"[호텔]", pos:"명사", ko:"호텔", ex:"The hotel was very comfortable.", exko:"호텔이 매우 편안했어요." },
+    { en:"reservation", pr:"[레저베이션]", pos:"명사", ko:"예약", ex:"I made a reservation online.", exko:"온라인으로 예약했어요." },
+    { en:"airport", pr:"[에어포트]", pos:"명사", ko:"공항", ex:"We need to go to the airport.", exko:"공항에 가야 해요." },
+    { en:"departure", pr:"[디파쳐]", pos:"명사", ko:"출발", ex:"Departure is at 9 in the morning.", exko:"출발은 아침 9시예요." },
+    { en:"arrival", pr:"[어라이벌]", pos:"명사", ko:"도착", ex:"What is the arrival time?", exko:"도착 시간이 언제예요?" },
+    { en:"tourist", pr:"[투어리스트]", pos:"명사", ko:"관광객", ex:"I am a tourist from Korea.", exko:"저는 한국에서 온 관광객이에요." },
+    { en:"map", pr:"[맵]", pos:"명사", ko:"지도", ex:"Can you show me on the map?", exko:"지도에서 보여 주실 수 있나요?" }
+  ],
+  // DAY 11 - 쇼핑 심화
+  [
+    { en:"size", pr:"[사이즈]", pos:"명사", ko:"크기, 사이즈", ex:"Do you have this in a larger size?", exko:"더 큰 사이즈 있나요?" },
+    { en:"color", pr:"[컬러]", pos:"명사", ko:"색깔", ex:"Do you have this in another color?", exko:"다른 색깔도 있나요?" },
+    { en:"try on", pr:"[트라이 온]", pos:"동사", ko:"입어 보다, 신어 보다", ex:"Can I try this on?", exko:"이거 입어 봐도 될까요?" },
+    { en:"fitting room", pr:"[피팅 룸]", pos:"명사", ko:"탈의실", ex:"The fitting room is over there.", exko:"탈의실은 저쪽에 있어요." },
+    { en:"refund", pr:"[리펀드]", pos:"명사", ko:"환불", ex:"I'd like a refund, please.", exko:"환불하고 싶어요." },
+    { en:"exchange", pr:"[익스체인지]", pos:"동사", ko:"교환하다", ex:"Can I exchange this?", exko:"이거 교환할 수 있나요?" },
+    { en:"sold out", pr:"[솔드 아웃]", pos:"표현", ko:"품절", ex:"I'm sorry, it's sold out.", exko:"죄송해요, 품절이에요." },
+    { en:"new arrival", pr:"[뉴 어라이벌]", pos:"표현", ko:"신상품", ex:"These are new arrivals.", exko:"이것들은 신상품이에요." },
+    { en:"popular", pr:"[파퓰러]", pos:"형용사", ko:"인기 있는", ex:"This is our most popular item.", exko:"이것이 가장 인기 있는 상품이에요." },
+    { en:"recommend", pr:"[레커멘드]", pos:"동사", ko:"추천하다", ex:"What do you recommend?", exko:"무엇을 추천하시나요?" }
+  ],
+  // DAY 12 - 은행 / 우체국
+  [
+    { en:"bank", pr:"[뱅크]", pos:"명사", ko:"은행", ex:"I need to go to the bank.", exko:"은행에 가야 해요." },
+    { en:"money", pr:"[머니]", pos:"명사", ko:"돈", ex:"I don't have enough money.", exko:"돈이 충분하지 않아요." },
+    { en:"withdraw", pr:"[위드드로우]", pos:"동사", ko:"인출하다", ex:"I want to withdraw some money.", exko:"돈을 좀 인출하고 싶어요." },
+    { en:"deposit", pr:"[디파짓]", pos:"동사", ko:"입금하다", ex:"I need to make a deposit.", exko:"입금해야 해요." },
+    { en:"transfer", pr:"[트랜스퍼]", pos:"동사", ko:"이체하다, 송금하다", ex:"I want to transfer money.", exko:"돈을 이체하고 싶어요." },
+    { en:"ATM", pr:"[에이티엠]", pos:"명사", ko:"현금인출기", ex:"Is there an ATM nearby?", exko:"근처에 현금인출기가 있나요?" },
+    { en:"post office", pr:"[포스트 오피스]", pos:"명사", ko:"우체국", ex:"I need to send this to the post office.", exko:"우체국에 이것을 보내야 해요." },
+    { en:"stamp", pr:"[스탬프]", pos:"명사", ko:"우표", ex:"How much is a stamp?", exko:"우표가 얼마예요?" },
+    { en:"package", pr:"[패키지]", pos:"명사", ko:"소포", ex:"I want to send this package.", exko:"이 소포를 보내고 싶어요." },
+    { en:"address", pr:"[어드레스]", pos:"명사", ko:"주소", ex:"What is your address?", exko:"주소가 어떻게 되세요?" }
+  ],
+  // DAY 13 - 취미 / 여가
+  [
+    { en:"hobby", pr:"[하비]", pos:"명사", ko:"취미", ex:"My hobby is gardening.", exko:"제 취미는 정원 가꾸기예요." },
+    { en:"walk", pr:"[워크]", pos:"명사", ko:"산책", ex:"I enjoy a morning walk.", exko:"아침 산책을 즐겨요." },
+    { en:"travel", pr:"[트래블]", pos:"동사", ko:"여행하다", ex:"I love to travel with my family.", exko:"가족과 여행하는 걸 좋아해요." },
+    { en:"read", pr:"[리드]", pos:"동사", ko:"읽다", ex:"I read books in the evening.", exko:"저녁에 책을 읽어요." },
+    { en:"music", pr:"[뮤직]", pos:"명사", ko:"음악", ex:"I enjoy listening to music.", exko:"음악 듣는 것을 좋아해요." },
+    { en:"cook", pr:"[쿡]", pos:"동사", ko:"요리하다", ex:"I love to cook for my family.", exko:"가족을 위해 요리하는 걸 좋아해요." },
+    { en:"movie", pr:"[무비]", pos:"명사", ko:"영화", ex:"Let's watch a movie tonight.", exko:"오늘 밤 영화 봐요." },
+    { en:"exercise", pr:"[엑서사이즈]", pos:"명사/동사", ko:"운동 / 운동하다", ex:"Exercise is good for your health.", exko:"운동은 건강에 좋아요." },
+    { en:"flower", pr:"[플라워]", pos:"명사", ko:"꽃", ex:"I love growing flowers.", exko:"꽃 키우는 걸 좋아해요." },
+    { en:"enjoy", pr:"[인조이]", pos:"동사", ko:"즐기다", ex:"I enjoy every day.", exko:"매일을 즐겨요." }
+  ],
+  // DAY 14 - 감정 / 상태
+  [
+    { en:"happy", pr:"[해피]", pos:"형용사", ko:"행복한", ex:"I feel happy today.", exko:"오늘 행복한 느낌이에요." },
+    { en:"sad", pr:"[쌔드]", pos:"형용사", ko:"슬픈", ex:"I feel a little sad.", exko:"조금 슬퍼요." },
+    { en:"worried", pr:"[워리드]", pos:"형용사", ko:"걱정되는", ex:"I am worried about my health.", exko:"건강이 걱정돼요." },
+    { en:"excited", pr:"[익사이티드]", pos:"형용사", ko:"설레는, 신나는", ex:"I am so excited!", exko:"너무 설레요!" },
+    { en:"tired", pr:"[타이어드]", pos:"형용사", ko:"피곤한", ex:"I feel very tired today.", exko:"오늘 너무 피곤해요." },
+    { en:"bored", pr:"[보드]", pos:"형용사", ko:"지루한", ex:"I am a little bored.", exko:"조금 지루해요." },
+    { en:"hungry", pr:"[헝그리]", pos:"형용사", ko:"배고픈", ex:"I am very hungry right now.", exko:"지금 매우 배고파요." },
+    { en:"full", pr:"[풀]", pos:"형용사", ko:"배부른", ex:"I am very full. Thank you!", exko:"많이 먹었어요. 감사해요!" },
+    { en:"better", pr:"[베터]", pos:"형용사", ko:"더 나은, 좀 나은", ex:"I feel much better now.", exko:"이제 훨씬 나아졌어요." },
+    { en:"fine", pr:"[파인]", pos:"형용사", ko:"괜찮은", ex:"I'm fine, thank you.", exko:"괜찮아요, 감사해요." }
+  ],
+
+  // ── 3주차 ── 생활 심화
+  // DAY 15 - 병원 심화
+  [
+    { en:"headache", pr:"[헤드에이크]", pos:"명사", ko:"두통", ex:"I have a terrible headache.", exko:"두통이 심해요." },
+    { en:"stomachache", pr:"[스터머케이크]", pos:"명사", ko:"복통", ex:"I have a stomachache.", exko:"배가 아파요." },
+    { en:"cold", pr:"[콜드]", pos:"명사", ko:"감기", ex:"I caught a cold.", exko:"감기에 걸렸어요." },
+    { en:"cough", pr:"[코프]", pos:"명사/동사", ko:"기침 / 기침하다", ex:"I have been coughing a lot.", exko:"기침을 많이 해요." },
+    { en:"dizzy", pr:"[디지]", pos:"형용사", ko:"어지러운", ex:"I feel dizzy.", exko:"어지러워요." },
+    { en:"hospital room", pr:"[하스피틀 룸]", pos:"명사", ko:"병실", ex:"She is in hospital room 302.", exko:"그녀는 302호 병실에 있어요." },
+    { en:"nurse", pr:"[너스]", pos:"명사", ko:"간호사", ex:"The nurse is very kind.", exko:"간호사가 매우 친절해요." },
+    { en:"injection", pr:"[인젝션]", pos:"명사", ko:"주사", ex:"I am afraid of injections.", exko:"주사가 무서워요." },
+    { en:"X-ray", pr:"[엑스레이]", pos:"명사", ko:"엑스레이", ex:"I need to get an X-ray.", exko:"엑스레이를 찍어야 해요." },
+    { en:"rest", pr:"[레스트]", pos:"동사", ko:"쉬다", ex:"The doctor told me to rest.", exko:"의사가 쉬라고 했어요." }
+  ],
+  // DAY 16 - 음식 심화
+  [
+    { en:"recipe", pr:"[레시피]", pos:"명사", ko:"요리법", ex:"Do you have a good recipe?", exko:"좋은 레시피 있어요?" },
+    { en:"ingredient", pr:"[인그리디언트]", pos:"명사", ko:"재료", ex:"What are the ingredients?", exko:"재료가 뭐예요?" },
+    { en:"boil", pr:"[보일]", pos:"동사", ko:"끓이다", ex:"Boil the water first.", exko:"먼저 물을 끓이세요." },
+    { en:"fry", pr:"[프라이]", pos:"동사", ko:"볶다, 튀기다", ex:"Fry the onions in oil.", exko:"기름에 양파를 볶으세요." },
+    { en:"taste", pr:"[테이스트]", pos:"명사/동사", ko:"맛 / 맛보다", ex:"Can I taste this?", exko:"이거 맛봐도 될까요?" },
+    { en:"sweet", pr:"[스윗]", pos:"형용사", ko:"달콤한", ex:"This cake is very sweet.", exko:"이 케이크는 매우 달아요." },
+    { en:"salty", pr:"[솔티]", pos:"형용사", ko:"짠", ex:"This soup is a little salty.", exko:"이 국은 조금 짜요." },
+    { en:"organic", pr:"[오가닉]", pos:"형용사", ko:"유기농의", ex:"I prefer organic vegetables.", exko:"유기농 채소를 선호해요." },
+    { en:"portion", pr:"[포션]", pos:"명사", ko:"양, 1인분", ex:"The portion is very big.", exko:"양이 많아요." },
+    { en:"dessert", pr:"[디저트]", pos:"명사", ko:"디저트, 후식", ex:"Would you like some dessert?", exko:"후식 드시겠어요?" }
+  ],
+  // DAY 17 - 전화 / 인터넷
+  [
+    { en:"phone", pr:"[폰]", pos:"명사", ko:"전화기", ex:"May I use your phone?", exko:"전화기 써도 될까요?" },
+    { en:"call", pr:"[콜]", pos:"동사", ko:"전화하다", ex:"I will call you later.", exko:"나중에 전화할게요." },
+    { en:"message", pr:"[메시지]", pos:"명사", ko:"문자, 메시지", ex:"I sent you a message.", exko:"메시지 보냈어요." },
+    { en:"internet", pr:"[인터넷]", pos:"명사", ko:"인터넷", ex:"The internet is very useful.", exko:"인터넷은 매우 유용해요." },
+    { en:"search", pr:"[써치]", pos:"동사", ko:"검색하다", ex:"I search online for recipes.", exko:"온라인으로 레시피를 검색해요." },
+    { en:"password", pr:"[패스워드]", pos:"명사", ko:"비밀번호", ex:"Please enter your password.", exko:"비밀번호를 입력해 주세요." },
+    { en:"download", pr:"[다운로드]", pos:"동사", ko:"다운로드하다", ex:"How do I download this app?", exko:"이 앱은 어떻게 다운로드해요?" },
+    { en:"video call", pr:"[비디오 콜]", pos:"명사", ko:"화상통화", ex:"Let's do a video call.", exko:"화상통화 해요." },
+    { en:"photo", pr:"[포토]", pos:"명사", ko:"사진", ex:"Let me take a photo.", exko:"사진 찍을게요." },
+    { en:"share", pr:"[쉐어]", pos:"동사", ko:"공유하다", ex:"I'll share the photo with you.", exko:"사진 공유해 드릴게요." }
+  ],
+  // DAY 18 - 날짜 / 계절
+  [
+    { en:"spring", pr:"[스프링]", pos:"명사", ko:"봄", ex:"Spring is my favorite season.", exko:"봄이 제가 가장 좋아하는 계절이에요." },
+    { en:"summer", pr:"[써머]", pos:"명사", ko:"여름", ex:"Summer is very hot in Korea.", exko:"한국의 여름은 매우 더워요." },
+    { en:"autumn", pr:"[오텀]", pos:"명사", ko:"가을", ex:"Autumn is so beautiful.", exko:"가을은 정말 아름다워요." },
+    { en:"winter", pr:"[윈터]", pos:"명사", ko:"겨울", ex:"I don't like cold winters.", exko:"추운 겨울은 싫어요." },
+    { en:"birthday", pr:"[버쓰데이]", pos:"명사", ko:"생일", ex:"Happy Birthday to you!", exko:"생일 축하해요!" },
+    { en:"holiday", pr:"[홀리데이]", pos:"명사", ko:"공휴일, 휴일", ex:"Tomorrow is a holiday.", exko:"내일은 공휴일이에요." },
+    { en:"weekend", pr:"[위켄드]", pos:"명사", ko:"주말", ex:"I rest on the weekend.", exko:"주말에는 쉬어요." },
+    { en:"anniversary", pr:"[애니버서리]", pos:"명사", ko:"기념일", ex:"Today is our 40th anniversary.", exko:"오늘은 40주년 기념일이에요." },
+    { en:"New Year", pr:"[뉴 이어]", pos:"명사", ko:"새해", ex:"Happy New Year!", exko:"새해 복 많이 받으세요!" },
+    { en:"schedule", pr:"[스케줄]", pos:"명사", ko:"일정, 계획", ex:"What is your schedule today?", exko:"오늘 일정이 어떻게 되세요?" }
+  ],
+  // DAY 19 - 몸 / 외모
+  [
+    { en:"head", pr:"[헤드]", pos:"명사", ko:"머리", ex:"My head hurts a little.", exko:"머리가 조금 아파요." },
+    { en:"eye", pr:"[아이]", pos:"명사", ko:"눈", ex:"My eyes are very tired.", exko:"눈이 많이 피로해요." },
+    { en:"ear", pr:"[이어]", pos:"명사", ko:"귀", ex:"My right ear hurts.", exko:"오른쪽 귀가 아파요." },
+    { en:"tooth", pr:"[투쓰]", pos:"명사", ko:"이, 치아", ex:"My tooth really hurts.", exko:"이가 많이 아파요." },
+    { en:"stomach", pr:"[스터맥]", pos:"명사", ko:"위장, 배", ex:"I have an upset stomach.", exko:"속이 좋지 않아요." },
+    { en:"back", pr:"[백]", pos:"명사", ko:"등, 허리", ex:"I have back pain.", exko:"허리가 아파요." },
+    { en:"knee", pr:"[니]", pos:"명사", ko:"무릎", ex:"My knee hurts when I walk.", exko:"걸을 때 무릎이 아파요." },
+    { en:"shoulder", pr:"[쇼울더]", pos:"명사", ko:"어깨", ex:"My shoulder is stiff.", exko:"어깨가 뻣뻣해요." },
+    { en:"hand", pr:"[핸드]", pos:"명사", ko:"손", ex:"My hands are cold.", exko:"손이 차가워요." },
+    { en:"foot", pr:"[풋]", pos:"명사", ko:"발", ex:"My feet hurt after walking.", exko:"걷고 나서 발이 아파요." }
+  ],
+  // DAY 20 - 옷 / 날씨에 맞는 옷차림
+  [
+    { en:"jacket", pr:"[재킷]", pos:"명사", ko:"재킷, 점퍼", ex:"Bring your jacket, it's cold.", exko:"추우니까 재킷 가져오세요." },
+    { en:"coat", pr:"[코트]", pos:"명사", ko:"코트", ex:"I need a warm coat for winter.", exko:"겨울을 위한 따뜻한 코트가 필요해요." },
+    { en:"scarf", pr:"[스카프]", pos:"명사", ko:"스카프, 목도리", ex:"Wear your scarf today.", exko:"오늘은 스카프 하세요." },
+    { en:"gloves", pr:"[글러브스]", pos:"명사", ko:"장갑", ex:"Don't forget your gloves.", exko:"장갑 잊지 마세요." },
+    { en:"comfortable", pr:"[컴퍼터블]", pos:"형용사", ko:"편안한", ex:"I like comfortable clothes.", exko:"편안한 옷을 좋아해요." },
+    { en:"warm", pr:"[웜]", pos:"형용사", ko:"따뜻한", ex:"Dress warm today.", exko:"오늘 따뜻하게 입으세요." },
+    { en:"loose", pr:"[루스]", pos:"형용사", ko:"헐렁한", ex:"I prefer loose-fitting clothes.", exko:"헐렁한 옷을 선호해요." },
+    { en:"boots", pr:"[부츠]", pos:"명사", ko:"부츠, 장화", ex:"I wear boots on rainy days.", exko:"비 오는 날에는 장화를 신어요." },
+    { en:"cotton", pr:"[코튼]", pos:"명사", ko:"면, 면직물", ex:"I like cotton clothes.", exko:"면 소재 옷을 좋아해요." },
+    { en:"outfit", pr:"[아웃핏]", pos:"명사", ko:"옷차림", ex:"Your outfit is very nice today!", exko:"오늘 옷차림이 정말 예뻐요!" }
+  ],
+  // DAY 21 - 감사 / 칭찬 표현
+  [
+    { en:"wonderful", pr:"[원더풀]", pos:"형용사", ko:"훌륭한, 멋진", ex:"You did a wonderful job!", exko:"정말 잘 하셨어요!" },
+    { en:"beautiful", pr:"[뷰티풀]", pos:"형용사", ko:"아름다운", ex:"The flowers are so beautiful.", exko:"꽃들이 정말 아름다워요." },
+    { en:"kind", pr:"[카인드]", pos:"형용사", ko:"친절한", ex:"You are very kind.", exko:"당신은 매우 친절해요." },
+    { en:"clever", pr:"[클레버]", pos:"형용사", ko:"영리한, 똑똑한", ex:"What a clever idea!", exko:"정말 영리한 생각이에요!" },
+    { en:"proud", pr:"[프라우드]", pos:"형용사", ko:"자랑스러운", ex:"I am so proud of you.", exko:"정말 자랑스러워요." },
+    { en:"awesome", pr:"[어썸]", pos:"형용사", ko:"대단한, 굉장한", ex:"That is awesome!", exko:"정말 대단해요!" },
+    { en:"amazing", pr:"[어메이징]", pos:"형용사", ko:"놀라운", ex:"You are amazing!", exko:"당신은 정말 놀라워요!" },
+    { en:"appreciate", pr:"[어프리시에이트]", pos:"동사", ko:"감사하다, 고마워하다", ex:"I really appreciate your help.", exko:"도움에 정말 감사드려요." },
+    { en:"miss", pr:"[미스]", pos:"동사", ko:"그리워하다", ex:"I miss you so much.", exko:"정말 많이 보고 싶어요." },
+    { en:"love", pr:"[러브]", pos:"동사/명사", ko:"사랑하다 / 사랑", ex:"I love my family so much.", exko:"가족을 정말 많이 사랑해요." }
+  ],
+
+  // ── 4주차 ── 생활 심화 2
+  // DAY 22 - 집 관리 / 수리
+  [
+    { en:"repair", pr:"[리페어]", pos:"동사", ko:"수리하다", ex:"I need to repair the sink.", exko:"싱크대를 수리해야 해요." },
+    { en:"broken", pr:"[브로큰]", pos:"형용사", ko:"고장난, 깨진", ex:"The refrigerator is broken.", exko:"냉장고가 고장났어요." },
+    { en:"leak", pr:"[릭]", pos:"명사/동사", ko:"누수, 새다", ex:"There is a water leak.", exko:"물이 새고 있어요." },
+    { en:"electricity", pr:"[일렉트리시티]", pos:"명사", ko:"전기", ex:"The electricity bill is high.", exko:"전기세가 많이 나왔어요." },
+    { en:"heat", pr:"[힛]", pos:"명사", ko:"난방, 열", ex:"Please turn on the heat.", exko:"난방 틀어 주세요." },
+    { en:"air conditioner", pr:"[에어 컨디셔너]", pos:"명사", ko:"에어컨", ex:"Please turn off the air conditioner.", exko:"에어컨을 꺼 주세요." },
+    { en:"furniture", pr:"[퍼니처]", pos:"명사", ko:"가구", ex:"I bought new furniture.", exko:"새 가구를 샀어요." },
+    { en:"curtain", pr:"[커튼]", pos:"명사", ko:"커튼", ex:"Please close the curtains.", exko:"커튼을 닫아 주세요." },
+    { en:"elevator", pr:"[엘리베이터]", pos:"명사", ko:"엘리베이터", ex:"The elevator is not working.", exko:"엘리베이터가 작동하지 않아요." },
+    { en:"floor", pr:"[플로어]", pos:"명사", ko:"층, 바닥", ex:"I live on the third floor.", exko:"3층에 살아요." }
+  ],
+  // DAY 23 - 동네 / 장소
+  [
+    { en:"market", pr:"[마켓]", pos:"명사", ko:"시장, 마켓", ex:"I go to the market every Saturday.", exko:"매주 토요일에 시장에 가요." },
+    { en:"park", pr:"[파크]", pos:"명사", ko:"공원", ex:"Let's take a walk in the park.", exko:"공원에서 산책해요." },
+    { en:"church", pr:"[처치]", pos:"명사", ko:"교회", ex:"I go to church on Sundays.", exko:"일요일에 교회에 가요." },
+    { en:"library", pr:"[라이브러리]", pos:"명사", ko:"도서관", ex:"The library is very quiet.", exko:"도서관은 매우 조용해요." },
+    { en:"restaurant", pr:"[레스터란트]", pos:"명사", ko:"음식점, 레스토랑", ex:"That restaurant has great food.", exko:"그 식당은 음식이 정말 맛있어요." },
+    { en:"coffee shop", pr:"[커피 샵]", pos:"명사", ko:"커피숍", ex:"Let's meet at the coffee shop.", exko:"커피숍에서 만나요." },
+    { en:"hair salon", pr:"[헤어 살롱]", pos:"명사", ko:"미용실", ex:"I have an appointment at the hair salon.", exko:"미용실 예약이 있어요." },
+    { en:"gym", pr:"[짐]", pos:"명사", ko:"헬스장", ex:"I go to the gym three times a week.", exko:"일주일에 세 번 헬스장에 가요." },
+    { en:"department store", pr:"[디파트먼트 스토어]", pos:"명사", ko:"백화점", ex:"Let's go to the department store.", exko:"백화점에 가요." },
+    { en:"convenience store", pr:"[컨비니언스 스토어]", pos:"명사", ko:"편의점", ex:"The convenience store is open 24 hours.", exko:"편의점은 24시간 열어요." }
+  ],
+  // DAY 24 - 건강 관리
+  [
+    { en:"diet", pr:"[다이어트]", pos:"명사", ko:"식이요법, 다이어트", ex:"I am on a healthy diet.", exko:"건강한 식단을 유지하고 있어요." },
+    { en:"vitamin", pr:"[비타민]", pos:"명사", ko:"비타민", ex:"I take vitamins every morning.", exko:"매일 아침 비타민을 먹어요." },
+    { en:"sleep", pr:"[슬립]", pos:"동사/명사", ko:"자다 / 수면", ex:"I need more sleep.", exko:"수면이 더 필요해요." },
+    { en:"stretch", pr:"[스트레치]", pos:"동사", ko:"스트레칭하다", ex:"I stretch before exercise.", exko:"운동 전에 스트레칭을 해요." },
+    { en:"walk", pr:"[워크]", pos:"동사", ko:"걷다", ex:"Walking is the best exercise.", exko:"걷기는 최고의 운동이에요." },
+    { en:"weight", pr:"[웨이트]", pos:"명사", ko:"몸무게, 체중", ex:"I want to lose a little weight.", exko:"살을 조금 빼고 싶어요." },
+    { en:"checkup", pr:"[체크업]", pos:"명사", ko:"건강검진", ex:"I have a checkup next week.", exko:"다음 주에 건강검진이 있어요." },
+    { en:"sugar", pr:"[슈거]", pos:"명사", ko:"설탕, 당분", ex:"I try to eat less sugar.", exko:"설탕을 덜 먹으려고 해요." },
+    { en:"stress", pr:"[스트레스]", pos:"명사", ko:"스트레스", ex:"Too much stress is bad for health.", exko:"스트레스가 너무 많으면 건강에 안 좋아요." },
+    { en:"relax", pr:"[릴랙스]", pos:"동사", ko:"쉬다, 긴장을 풀다", ex:"Take a deep breath and relax.", exko:"깊게 숨을 쉬고 편히 쉬세요." }
+  ],
+  // DAY 25 - 자녀 / 손자와 대화
+  [
+    { en:"school", pr:"[스쿨]", pos:"명사", ko:"학교", ex:"My grandchild goes to school.", exko:"제 손주는 학교에 다녀요." },
+    { en:"study", pr:"[스터디]", pos:"동사", ko:"공부하다", ex:"Study hard and do your best.", exko:"열심히 공부하고 최선을 다해요." },
+    { en:"homework", pr:"[홈워크]", pos:"명사", ko:"숙제", ex:"Did you finish your homework?", exko:"숙제 다 했어요?" },
+    { en:"grade", pr:"[그레이드]", pos:"명사", ko:"성적, 학년", ex:"Your grades are very good!", exko:"성적이 정말 좋네요!" },
+    { en:"teacher", pr:"[티처]", pos:"명사", ko:"선생님", ex:"My teacher is very kind.", exko:"선생님이 매우 친절해요." },
+    { en:"play", pr:"[플레이]", pos:"동사", ko:"놀다, 뛰어놀다", ex:"Go out and play with friends.", exko:"나가서 친구들이랑 놀아요." },
+    { en:"eat well", pr:"[잇 웰]", pos:"표현", ko:"잘 먹어", ex:"Eat well and grow strong!", exko:"잘 먹고 튼튼하게 자라요!" },
+    { en:"careful", pr:"[케어풀]", pos:"형용사", ko:"조심하는", ex:"Be careful on the road.", exko:"길에서 조심해요." },
+    { en:"proud", pr:"[프라우드]", pos:"형용사", ko:"자랑스러운", ex:"Grandma is so proud of you!", exko:"할머니가 정말 자랑스러워요!" },
+    { en:"hug", pr:"[허그]", pos:"명사/동사", ko:"포옹 / 안아주다", ex:"Come here and give me a hug!", exko:"이리 와서 안아 줘요!" }
+  ],
+  // DAY 26 - 종교 / 인생 표현
+  [
+    { en:"pray", pr:"[프레이]", pos:"동사", ko:"기도하다", ex:"I pray every morning.", exko:"매일 아침 기도해요." },
+    { en:"blessing", pr:"[블레싱]", pos:"명사", ko:"축복, 은혜", ex:"Every day is a blessing.", exko:"매일이 축복이에요." },
+    { en:"grateful", pr:"[그레이트풀]", pos:"형용사", ko:"감사하는", ex:"I am so grateful for everything.", exko:"모든 것에 감사해요." },
+    { en:"hope", pr:"[호프]", pos:"명사/동사", ko:"희망 / 바라다", ex:"I hope you have a great day.", exko:"좋은 하루 보내시길 바라요." },
+    { en:"peace", pr:"[피스]", pos:"명사", ko:"평화", ex:"I find peace in prayer.", exko:"기도에서 평화를 찾아요." },
+    { en:"memory", pr:"[메모리]", pos:"명사", ko:"추억, 기억", ex:"I have wonderful memories.", exko:"아름다운 추억이 많아요." },
+    { en:"past", pr:"[패스트]", pos:"명사", ko:"과거", ex:"The past was beautiful.", exko:"과거는 아름다웠어요." },
+    { en:"future", pr:"[퓨처]", pos:"명사", ko:"미래", ex:"I am excited about the future.", exko:"미래가 기대돼요." },
+    { en:"wisdom", pr:"[위즈덤]", pos:"명사", ko:"지혜", ex:"Experience brings wisdom.", exko:"경험이 지혜를 가져다줘요." },
+    { en:"life", pr:"[라이프]", pos:"명사", ko:"삶, 인생", ex:"Life is beautiful.", exko:"삶은 아름다워요." }
+  ],
+  // DAY 27 - 음식점 심화 / 카페
+  [
+    { en:"coffee", pr:"[커피]", pos:"명사", ko:"커피", ex:"I drink coffee every morning.", exko:"매일 아침 커피를 마셔요." },
+    { en:"tea", pr:"[티]", pos:"명사", ko:"차", ex:"Would you like some tea?", exko:"차 드실래요?" },
+    { en:"juice", pr:"[주스]", pos:"명사", ko:"주스", ex:"I'd like an orange juice.", exko:"오렌지 주스 주세요." },
+    { en:"cake", pr:"[케이크]", pos:"명사", ko:"케이크", ex:"The birthday cake is delicious.", exko:"생일 케이크가 맛있어요." },
+    { en:"reservation", pr:"[레저베이션]", pos:"명사", ko:"예약", ex:"I have a reservation for two.", exko:"두 명 예약했어요." },
+    { en:"vegetable", pr:"[베지터블]", pos:"명사", ko:"채소", ex:"I eat a lot of vegetables.", exko:"채소를 많이 먹어요." },
+    { en:"fruit", pr:"[프루트]", pos:"명사", ko:"과일", ex:"I love eating fresh fruit.", exko:"신선한 과일을 좋아해요." },
+    { en:"soup", pr:"[수프]", pos:"명사", ko:"국, 수프", ex:"This soup is perfect for cold days.", exko:"이 국은 추운 날에 딱이에요." },
+    { en:"rice", pr:"[라이스]", pos:"명사", ko:"밥", ex:"Can I have more rice?", exko:"밥 좀 더 주세요." },
+    { en:"wait", pr:"[웨이트]", pos:"동사", ko:"기다리다", ex:"Please wait a moment.", exko:"잠시만 기다려 주세요." }
+  ],
+  // DAY 28 - 마무리 복습 / 핵심 표현 모음
+  [
+    { en:"understand", pr:"[언더스탠드]", pos:"동사", ko:"이해하다", ex:"I don't understand. Can you repeat?", exko:"이해가 안 돼요. 다시 말씀해 주실 수 있나요?" },
+    { en:"slowly", pr:"[슬로울리]", pos:"부사", ko:"천천히", ex:"Please speak more slowly.", exko:"더 천천히 말씀해 주세요." },
+    { en:"again", pr:"[어겐]", pos:"부사", ko:"다시", ex:"Could you say that again?", exko:"다시 말씀해 주실 수 있나요?" },
+    { en:"how much", pr:"[하우 머치]", pos:"표현", ko:"얼마예요?", ex:"How much is this?", exko:"이것은 얼마예요?" },
+    { en:"where", pr:"[웨어]", pos:"의문사", ko:"어디", ex:"Where is the nearest station?", exko:"가장 가까운 역이 어디예요?" },
+    { en:"how do I get to", pr:"[하우 두 아이 겟 투]", pos:"표현", ko:"어떻게 가나요?", ex:"How do I get to the hospital?", exko:"병원에 어떻게 가나요?" },
+    { en:"I need", pr:"[아이 니드]", pos:"표현", ko:"~이 필요해요", ex:"I need some help.", exko:"도움이 필요해요." },
+    { en:"Can you help me?", pr:"[캔 유 헬프 미?]", pos:"표현", ko:"도와주실 수 있나요?", ex:"Can you help me find this place?", exko:"이 장소를 찾도록 도와주실 수 있나요?" },
+    { en:"I would like", pr:"[아이 우드 라이크]", pos:"표현", ko:"~을 원해요 / 주세요", ex:"I would like a cup of tea.", exko:"차 한 잔 주세요." },
+    { en:"have a great day", pr:"[해브 어 그레이트 데이]", pos:"표현", ko:"좋은 하루 보내세요", ex:"Have a great day, everyone!", exko:"모두 좋은 하루 보내세요!" }
+  ]
+];
+
+var TOPICS = [
+  "인사 / 기본 표현","숫자 / 시간","가족 / 사람","병원 / 건강","음식 / 식당","쇼핑 / 마트","집 / 생활",
+  "교통 / 길찾기","날씨","여행 준비","쇼핑 심화","은행 / 우체국","취미 / 여가","감정 / 상태",
+  "병원 심화","음식 심화","전화 / 인터넷","날짜 / 계절","몸 / 신체","옷차림","감사 / 칭찬",
+  "집 관리 / 수리","동네 / 장소","건강 관리","자녀 / 손자","종교 / 인생","카페 / 음식점","마무리 표현"
+];
+
+/* ─── STATE ─── */
+var week = 0, day = 0, mode = 'list', cardIdx = 0, cardFlipped = false;
+var quizWords = [], quizIdx = 0, quizScore = 0, quizAnswered = false;
+
+function W() { return ALL_WORDS[day]; }
+function setProgress(v, m) { document.getElementById('progressFill').style.width = Math.round(v/m*100)+'%'; }
+function showOnly(id) {
+  ['listMode','cardMode','quizMode'].forEach(function(s){
+    document.getElementById(s).classList.toggle('hidden', s !== id);
+  });
+}
+
+/* ─── TTS ─── */
+function speak(text, rate) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; u.rate = rate || 0.72;
+  window.speechSynthesis.speak(u);
+}
+function flashBtn(btn) {
+  btn.classList.add('active');
+  setTimeout(function(){ btn.classList.remove('active'); }, 900);
+}
+
+/* ─── 주차 탭 ─── */
+document.querySelectorAll('.week-tab').forEach(function(btn) {
+  btn.onclick = function() {
+    week = parseInt(btn.getAttribute('data-week'));
+    day = week * 7;
+    cardIdx = 0; cardFlipped = false;
+    document.querySelectorAll('.week-tab').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    renderDots();
+    updateDayInfo();
+    go();
+  };
+});
+
+/* ─── 날짜 점 ─── */
+function renderDots() {
+  var container = document.getElementById('dayDots');
+  container.innerHTML = '';
+  for (var i = 0; i < 7; i++) {
+    var d = week * 7 + i;
+    var dot = document.createElement('div');
+    dot.className = 'day-dot' + (d === day ? ' active' : '');
+    dot.textContent = d + 1;
+    dot.setAttribute('data-day', d);
+    dot.onclick = (function(dd) { return function() {
+      day = dd; cardIdx = 0; cardFlipped = false;
+      renderDots(); updateDayInfo(); go();
+    }; })(d);
+    container.appendChild(dot);
+  }
+}
+
+function updateDayInfo() {
+  document.getElementById('dayLabel').textContent = 'DAY ' + (day + 1);
+  document.getElementById('dayTopic').textContent = '📚 ' + TOPICS[day];
+  document.getElementById('dayRange').textContent = '단어 ' + (day * 10 + 1) + '–' + (day * 10 + 10);
+}
+
+/* ─── DAY NAV ─── */
+document.getElementById('btnPrevDay').onclick = function() {
+  var newDay = day - 1;
+  if (newDay < 0) newDay = 27;
+  day = newDay;
+  week = Math.floor(day / 7);
+  document.querySelectorAll('.week-tab').forEach(function(b, i){ b.classList.toggle('active', i === week); });
+  cardIdx = 0; cardFlipped = false;
+  renderDots(); updateDayInfo(); go();
+};
+document.getElementById('btnNextDay').onclick = function() {
+  var newDay = day + 1;
+  if (newDay > 27) newDay = 0;
+  day = newDay;
+  week = Math.floor(day / 7);
+  document.querySelectorAll('.week-tab').forEach(function(b, i){ b.classList.toggle('active', i === week); });
+  cardIdx = 0; cardFlipped = false;
+  renderDots(); updateDayInfo(); go();
+};
+
+/* ─── 탭 ─── */
+['list','card','quiz'].forEach(function(m) {
+  document.getElementById('tab-'+m).onclick = function() {
+    mode = m;
+    ['list','card','quiz'].forEach(function(x){
+      document.getElementById('tab-'+x).classList.toggle('active', x===m);
+    });
+    go();
+  };
+});
+function go() {
+  if (mode==='list') doList();
+  else if (mode==='card') doCard();
+  else doQuizStart();
+}
+
+/* ─── LIST ─── */
+function doList() {
+  showOnly('listMode');
+  var w = W(), html = '';
+  for (var i = 0; i < w.length; i++) {
+    html += '<div class="word-item">'
+      + '<div class="word-top">'
+      + '<span class="word-num">'+(i+1)+'.</span>'
+      + '<span class="word-en">'+w[i].en+'</span>'
+      + '<span class="word-pos">'+w[i].pos+'</span>'
+      + '<button class="icon-btn" data-action="speak-word" data-idx="'+i+'">🔊</button>'
+      + '</div>'
+      + '<div class="word-pronounce">'+w[i].pr+'</div>'
+      + '<div class="word-ko">'+w[i].ko+'</div>'
+      + '<div class="word-example-row">'
+      + '<div><div class="word-example">'+w[i].ex+'</div>'
+      + '<div class="word-example-ko">→ '+w[i].exko+'</div></div>'
+      + '<button class="icon-btn" data-action="speak-ex" data-idx="'+i+'" style="flex-shrink:0;margin-top:2px">🔊</button>'
+      + '</div>'
+      + '</div>';
+  }
+  document.getElementById('wordList').innerHTML = html;
+  document.getElementById('wordList').onclick = function(e) {
+    var btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    var idx = parseInt(btn.getAttribute('data-idx'));
+    if (btn.getAttribute('data-action') === 'speak-word') { speak(W()[idx].en); flashBtn(btn); }
+    else { speak(W()[idx].ex, 0.78); flashBtn(btn); }
+  };
+  setProgress(10,10);
+}
+
+/* ─── CARD ─── */
+function doCard() {
+  showOnly('cardMode');
+  var fc = document.getElementById('flashcard');
+  fc.style.transition = 'none';
+  fc.classList.remove('flipped');
+  cardFlipped = false;
+  fc.offsetHeight;
+  fc.style.transition = '';
+  var w = W()[cardIdx];
+  document.getElementById('cardWord').textContent = w.en;
+  document.getElementById('cardPronounce').textContent = w.pr;
+  document.getElementById('cardPos').textContent = w.pos;
+  document.getElementById('cardMeaning').textContent = w.ko;
+  document.getElementById('cardExample').textContent = w.ex;
+  document.getElementById('cardExampleKo').textContent = '→ ' + w.exko;
+  document.getElementById('cardCounter').textContent = (cardIdx+1)+' / 10';
+  setProgress(cardIdx+1,10);
+}
+document.getElementById('flashcardWrap').onclick = function() {
+  cardFlipped = !cardFlipped;
+  document.getElementById('flashcard').classList.toggle('flipped', cardFlipped);
+};
+document.getElementById('cardSpeakWord').onclick = function(e) { e.stopPropagation(); speak(W()[cardIdx].en); flashBtn(this); };
+document.getElementById('cardSpeakEx').onclick = function(e) { e.stopPropagation(); speak(W()[cardIdx].ex, 0.78); flashBtn(this); };
+document.getElementById('btnPrevCard').onclick = function(e) { e.stopPropagation(); cardIdx = (cardIdx-1+10)%10; doCard(); };
+document.getElementById('btnNextCard').onclick = function(e) { e.stopPropagation(); cardIdx = (cardIdx+1)%10; doCard(); };
+
+/* ─── QUIZ ─── */
+function doQuizStart() {
+  showOnly('quizMode');
+  quizWords = W().slice().sort(function(){ return Math.random()-0.5; });
+  quizIdx = 0; quizScore = 0; quizAnswered = false;
+  document.getElementById('quizResult').classList.add('hidden');
+  document.getElementById('quizPlay').classList.remove('hidden');
+  doQuizQuestion();
+}
+function doQuizQuestion() {
+  if (quizIdx >= 10) { doQuizResult(); return; }
+  quizAnswered = false;
+  var w = quizWords[quizIdx];
+  document.getElementById('quizWord').textContent = w.en;
+  document.getElementById('quizPos').textContent = w.pr;
+  document.getElementById('quizScore').textContent = '점수: '+quizScore+' / '+quizIdx;
+  setProgress(quizIdx, 10);
+  var others = W().filter(function(x){ return x.en !== w.en; }).sort(function(){ return Math.random()-0.5; }).slice(0,3);
+  var opts = others.concat([w]).sort(function(){ return Math.random()-0.5; });
+  var container = document.getElementById('quizOptions');
+  container.innerHTML = '';
+  opts.forEach(function(opt) {
+    (function(o) {
+      var btn = document.createElement('button');
+      btn.className = 'quiz-opt';
+      btn.textContent = o.ko;
+      btn.onclick = function() { pickAnswer(btn, o.ko === w.ko, container, w.ko); };
+      container.appendChild(btn);
+    })(opt);
+  });
+}
+function pickAnswer(btn, correct, container, correctKo) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  var btns = container.querySelectorAll('.quiz-opt');
+  btns.forEach(function(b){ b.disabled = true; });
+  if (correct) { btn.classList.add('correct'); quizScore++; }
+  else {
+    btn.classList.add('wrong');
+    btns.forEach(function(b){ if (b.textContent === correctKo) b.classList.add('correct'); });
+  }
+  setTimeout(function(){ quizIdx++; doQuizQuestion(); }, 1300);
+}
+function doQuizResult() {
+  document.getElementById('quizPlay').classList.add('hidden');
+  document.getElementById('quizResult').classList.remove('hidden');
+  document.getElementById('resultScore').textContent = quizScore+'/10';
+  var msgs = [
+    '🤗 괜찮아요! 천천히 다시 해봐요.',
+    '😊 잘하고 있어요! 조금만 더 연습해요.',
+    '👏 훌륭해요! 많이 외우셨네요!',
+    '🏆 완벽합니다! 정말 대단하세요!'
+  ];
+  document.getElementById('resultLabel').textContent = msgs[quizScore<=4?0:quizScore<=6?1:quizScore<=8?2:3];
+  document.getElementById('quizScore').textContent = '최종 점수: '+quizScore+' / 10';
+  setProgress(10,10);
+}
+document.getElementById('btnRetry').onclick = doQuizStart;
+
+/* ─── INIT ─── */
+renderDots();
+updateDayInfo();
+doList();
+</script>
+</body>
+</html>
